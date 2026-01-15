@@ -4,6 +4,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import ScannerScreen from './screens/ScannerScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
+import FormScreen from './screens/FormScreen';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -13,6 +14,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="ScannerScreen" component={ScannerScreen} options={{ headerShown: false, }}/>
+        <Stack.Screen name="FormScreen" component={FormScreen} options={{ headerShown: false, }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, Button } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { LaserLine } from '../animation/LaserLine';
 
-export default function ScannerScreen() {
+export default function ScannerScreen({ navigation }) {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
 
@@ -22,6 +22,7 @@ export default function ScannerScreen() {
         onBarcodeScanned={scanned ? undefined : ({ data }) => {
           setScanned(true);
           alert(`Scanned: ${data}`);
+          navigation.navigate("FormScreen");
         }}
         barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
       />
@@ -45,7 +46,7 @@ export default function ScannerScreen() {
         </View>
 
         <View style={styles.unfocusedContainer}>
-            <Text style={styles.instructionText}>Align QR code within the frame</Text>
+            <Text style={styles.instructionText}>Scan the student QR Code</Text>
             {scanned && (
                 <Button title="Scan Again" onPress={() => setScanned(false)} color="white" />
             )}
