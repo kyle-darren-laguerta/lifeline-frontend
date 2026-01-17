@@ -12,7 +12,7 @@ export default function FormScreen() {
 
     return (
         <SafeAreaView>
-            <Header />
+            <Header style={{ marginBottom: 50, }}/>
             <EmergencyLevelButton color={"#ffea25"} imgPath={require("../assets/images/e-level-1.png")} headerText={"LEVEL 1"}/>
             <EmergencyLevelButton color={"#cc4e00"} imgPath={require("../assets/images/e-level-2.png")} headerText={"LEVEL 2"}/>
             <EmergencyLevelButton color={"#7a0000"} imgPath={require("../assets/images/e-level-3.png")} headerText={"LEVEL 3"}/>

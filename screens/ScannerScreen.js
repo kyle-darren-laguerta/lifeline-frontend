@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, Button } from 'react-native';
+import { StyleSheet, View, Text, Button, StatusBar } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { LaserLine } from '../animation/LaserLine';
+import Header from '../components/Header';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ScannerScreen({ navigation }) {
   const [permission, requestPermission] = useCameraPermissions();
@@ -16,45 +18,51 @@ export default function ScannerScreen({ navigation }) {
   }
 
   return (
-    <View style={styles.container}>
-      <CameraView
-        style={StyleSheet.absoluteFillObject}
-        onBarcodeScanned={scanned ? undefined : ({ data }) => {
-          setScanned(true);
-          alert(`Scanned: ${data}`);
-          navigation.navigate("FormScreen");
-        }}
-        barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+  <View style={styles.container}>
+    <StatusBar 
+        barStyle="dark-content" 
+        backgroundColor="#ffffff" // Android background color
       />
+    <CameraView
+      style={StyleSheet.absoluteFillObject}
+      onBarcodeScanned={scanned ? undefined : ({ data }) => {
+        setScanned(true);
+        alert(`Scanned: ${data}`);
+        navigation.navigate("FormScreen");
+      }}
+      barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+    />
 
-      {/* --- OVERLAY START --- */}
-      <View style={styles.overlay}>
+    <View style={styles.overlay}>
+      {/* 1. Add the Header here with a specific style */}
+      <SafeAreaView style={styles.headerWrapper}>
+        <Header />
+      </SafeAreaView>
+
+      {/* 2. The rest of your layout remains exactly the same */}
+      <View style={styles.unfocusedContainer}></View>
+      
+      <View style={styles.middleContainer}>
         <View style={styles.unfocusedContainer}></View>
-        
-        <View style={styles.middleContainer}>
-          <View style={styles.unfocusedContainer}></View>
-          {/* The Actual Scanning Frame */}
-          <View style={styles.focusedContainer}>
+        <View style={styles.focusedContainer}>
              <View style={styles.cornerTopLeft} />
              <View style={styles.cornerTopRight} />
              <View style={styles.cornerBottomLeft} />
              <View style={styles.cornerBottomRight} />
-
              <LaserLine />
-          </View>
-          <View style={styles.unfocusedContainer}></View>
         </View>
-
-        <View style={styles.unfocusedContainer}>
-            <Text style={styles.instructionText}>Scan the student QR Code</Text>
-            {scanned && (
-                <Button title="Scan Again" onPress={() => setScanned(false)} color="white" />
-            )}
-        </View>
+        <View style={styles.unfocusedContainer}></View>
       </View>
-      {/* --- OVERLAY END --- */}
+
+      <View style={styles.unfocusedContainer}>
+          <Text style={styles.instructionText}>Scan the student QR Code</Text>
+          {scanned && (
+              <Button title="Scan Again" onPress={() => setScanned(false)} color="white" />
+          )}
+      </View>
     </View>
-  );
+  </View>
+);
 }
 
 const styles = StyleSheet.create({
@@ -67,6 +75,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+  },
+  headerWrapper: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10, // Ensures it stays on top of the dimmed background
   },
   unfocusedContainer: {
     flex: 1,
