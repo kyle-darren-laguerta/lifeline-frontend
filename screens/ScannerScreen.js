@@ -28,7 +28,7 @@ export default function ScannerScreen({ navigation }) {
       onBarcodeScanned={scanned ? undefined : ({ data }) => {
         setScanned(true);
         alert(`Scanned: ${data}`);
-        navigation.navigate("FormScreen");
+        navigation.navigate("FormScreen", { studentID: data });
       }}
       barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
     />
