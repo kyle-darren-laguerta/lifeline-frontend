@@ -5,7 +5,7 @@ import { TouchableOpacity, Text } from "react-native";
 import EmergencyLevelButton from "../components/EmergencyLevelButton";
 import Header from "../components/Header";
 
-export default function FormScreen() {
+export default function FormScreen({ navigation }) {
     const [emergencyLevel, setEmergencyLevel] = useState("");
 
     const emergencyLevels = ["Level 1", "Level 2", "Level 3"];
@@ -13,9 +13,13 @@ export default function FormScreen() {
     return (
         <SafeAreaView>
             <Header style={{ marginBottom: 50, }}/>
-            <EmergencyLevelButton color={"#ffea25"} imgPath={require("../assets/images/e-level-1.png")} headerText={"LEVEL 1"}/>
-            <EmergencyLevelButton color={"#cc4e00"} imgPath={require("../assets/images/e-level-2.png")} headerText={"LEVEL 2"}/>
-            <EmergencyLevelButton color={"#7a0000"} imgPath={require("../assets/images/e-level-3.png")} headerText={"LEVEL 3"}/>
+            <Dropdown options={["type a", "type b", "type c", "type d"]} placeHolder={"Select type"} />
+            <Text>{"...other form inputs"}</Text>
+            <EmergencyLevelButton color="#147a00" imgPath={require("../assets/images/notify-icon.png")} headerText={"Notify"}/>
+            <EmergencyLevelButton color="#7a0000" imgPath={require("../assets/images/emergency-icon.png")} headerText={"Notify as Emergency"}/>
+            {/* <EmergencyLevelButton color={"#ffea25"} imgPath={require("../assets/images/e-level-1.png")} headerText={"LEVEL 1"} onPress={() => navigation.navigate("Level1EmergencyScreen")}/>
+            <EmergencyLevelButton color={"#cc4e00"} imgPath={require("../assets/images/e-level-2.png")} headerText={"LEVEL 2"} onPress={() => navigation.navigate("Level2EmergencyScreen")}/>
+            <EmergencyLevelButton color={"#7a0000"} imgPath={require("../assets/images/e-level-3.png")} headerText={"LEVEL 3"} onPress={() => navigation.navigate("Level3EmergencyScreen")} /> */}
         </SafeAreaView>
     );
 }

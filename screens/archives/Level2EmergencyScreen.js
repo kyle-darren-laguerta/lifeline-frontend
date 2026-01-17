@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Switch
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider'; // You may need to install this
 
-const Level2UrgentScreen = () => {
+const Level2EmergencyScreen = () => {
   const [painLevel, setPainLevel] = useState(0);
   const [notifyParent, setNotifyParent] = useState(false);
   const [needsEscort, setNeedsEscort] = useState(false);
@@ -31,9 +31,9 @@ const Level2UrgentScreen = () => {
             style={{ width: '100%', height: 40 }}
             minimumValue={0}
             maximumValue={10}
-            minimumTrackTintColor="#FFB300"
+            minimumTrackTintColor="#cc4e00"
             maximumTrackTintColor="#D1D1D1"
-            thumbTintColor="#FFB300"
+            thumbTintColor="#cc4e00"
             onValueChange={setPainLevel}
           />
         </View>
@@ -57,7 +57,7 @@ const Level2UrgentScreen = () => {
           <Switch 
             value={needsEscort} 
             onValueChange={setNeedsEscort}
-            trackColor={{ false: "#767577", true: "#FFB300" }}
+            trackColor={{ false: "#767577", true: "#cc4e00" }}
           />
         </View>
 
@@ -69,7 +69,7 @@ const Level2UrgentScreen = () => {
           <Switch 
             value={notifyParent} 
             onValueChange={setNotifyParent}
-            trackColor={{ false: "#767577", true: "#FFB300" }}
+            trackColor={{ false: "#767577", true: "#cc4e00" }}
           />
         </View>
 
@@ -95,14 +95,14 @@ const Level2UrgentScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F9F9F9' },
-  header: { backgroundColor: '#FFB300', padding: 30, paddingTop: 50 },
+  header: { backgroundColor: '#cc4e00', padding: 30, paddingTop: 50 },
   headerTitle: { fontSize: 24, fontWeight: 'bold', color: 'black' },
   headerSubtitle: { fontSize: 16, color: 'rgba(0,0,0,0.6)' },
   content: { padding: 20 },
   section: { marginBottom: 25 },
   sectionTitle: { fontSize: 13, fontWeight: 'bold', color: '#666', marginBottom: 10, letterSpacing: 1 },
   painDisplay: { alignItems: 'center', marginBottom: 10 },
-  painNumber: { fontSize: 40, fontWeight: 'bold', color: '#FFB300' },
+  painNumber: { fontSize: 40, fontWeight: 'bold', color: '#cc4e00' },
   painDescription: { fontSize: 16, fontWeight: '600', color: '#444' },
   symptomGrid: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 20 },
   chip: {
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     height: 100,
   },
   submitButton: {
-    backgroundColor: '#FFB300',
+    backgroundColor: '#cc4e00',
     flexDirection: 'row',
     padding: 20,
     justifyContent: 'center',
@@ -151,4 +151,4 @@ const styles = StyleSheet.create({
   submitText: { fontSize: 18, fontWeight: 'bold', marginLeft: 10 },
 });
 
-export default Level2UrgentScreen;
+export default Level2EmergencyScreen;

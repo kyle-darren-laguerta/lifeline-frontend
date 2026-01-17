@@ -1,6 +1,6 @@
 import { TouchableOpacity, Image, Text } from "react-native";
 
-export default function EmergencyLevelButton({ color, imgPath, headerText }) {
+export default function EmergencyLevelButton({ color, imgPath, headerText, ...rest }) {
     return (
         <TouchableOpacity 
             style={{
@@ -15,6 +15,7 @@ export default function EmergencyLevelButton({ color, imgPath, headerText }) {
                 alignSelf: "center",
                 marginVertical: 10
             }}
+            {...rest}
         >
             <Text
                 style={{

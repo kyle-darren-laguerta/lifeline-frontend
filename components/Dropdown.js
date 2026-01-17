@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, FlatList, Modal } from 'react-native';
 
-export default function Dropdown({ options, onSelect }) {
+export default function Dropdown({ options, placeHolder, onSelect }) {
   const [visible, setVisible] = useState(false);
-  const [selectedValue, setSelectedValue] = useState('Select an option');
+  const [selectedValue, setSelectedValue] = useState(placeHolder);
+
+  // Sync state with prop updates
+  useEffect(() => {
+    setSelectedValue(placeHolder);
+  }, [placeHolder]);
 
   return (
-    <View style={{ padding: 20, }}>
+    <View style={{ padding: 20, alignItems: "center"}}>
       {/* The Input "Box" */}
       <Pressable
         onPress={() => setVisible(!visible)}
@@ -22,7 +27,7 @@ export default function Dropdown({ options, onSelect }) {
           height: 45,
         }}
       >
-        <Text style={{ fontSize: 16, color: selectedValue === 'Select an option' ? '#999' : '#000' }}>
+        <Text style={{ fontSize: 16, color: selectedValue === placeHolder ? '#999' : '#000' }}>
           {selectedValue}
         </Text>
         

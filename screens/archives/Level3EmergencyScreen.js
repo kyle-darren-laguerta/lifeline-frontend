@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, TextInput } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const Level3EmergencyScreen = () => {
@@ -57,7 +57,7 @@ const Level3EmergencyScreen = () => {
               style={styles.gridItem} 
               onPress={() => handleCriticalAction(item.label)}
             >
-              <MaterialCommunityIcons name={item.icon} size={40} color="#D32F2F" />
+              <MaterialCommunityIcons name={item.icon} size={40} color="#7a0000" />
               <Text style={styles.gridLabel}>{item.label}</Text>
             </TouchableOpacity>
           ))}
@@ -67,8 +67,8 @@ const Level3EmergencyScreen = () => {
         <View style={styles.equipmentCard}>
           <MaterialCommunityIcons name="heart-flash" size={30} color="#D32F2F" />
           <View style={styles.equipmentTextContainer}>
-            <Text style={styles.equipmentTitle}>NEAREST AED LOCATION</Text>
-            <Text style={styles.equipmentLocation}>Hallway B - Next to Room 204</Text>
+            <Text style={styles.equipmentTitle}>Enter Location/Landmark</Text>
+            <TextInput style={{borderBlockColor: "gray", borderBottomWidth: 1, width: '100%' }}/>
           </View>
         </View>
 
@@ -91,7 +91,7 @@ const Level3EmergencyScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFF' },
-  header: { backgroundColor: '#D32F2F', padding: 40, alignItems: 'center' },
+  header: { backgroundColor: '#7a0000', padding: 40, alignItems: 'center' },
   headerSubtitle: { color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 'bold' },
   timerText: { color: 'white', fontSize: 48, fontWeight: '900' },
   content: { padding: 20 },
@@ -128,13 +128,13 @@ const styles = StyleSheet.create({
     borderLeftColor: '#D32F2F',
     marginTop: 10,
   },
-  equipmentTextContainer: { marginLeft: 15 },
+  equipmentTextContainer: { marginLeft: 15, width: "80%" },
   equipmentTitle: { fontSize: 12, color: '#D32F2F', fontWeight: 'bold' },
   equipmentLocation: { fontSize: 16, fontWeight: 'bold' },
   studentInfoCard: { marginTop: 20, padding: 15, backgroundColor: '#EEE', borderRadius: 12 },
   infoTitle: { fontWeight: 'bold', marginBottom: 5 },
   alertText: { color: '#D32F2F', fontWeight: 'bold', fontSize: 15 },
-  broadcastButton: { backgroundColor: '#D32F2F', padding: 20, alignItems: 'center' },
+  broadcastButton: { backgroundColor: '#7a0000', padding: 20, alignItems: 'center' },
   broadcastText: { color: 'white', fontWeight: 'bold', fontSize: 18 },
 });
 

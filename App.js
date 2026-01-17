@@ -5,6 +5,9 @@ import ScannerScreen from './screens/ScannerScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import FormScreen from './screens/FormScreen';
+import Level3EmergencyScreen from './screens/archives/Level3EmergencyScreen';
+import Level2EmergencyScreen from './screens/archives/Level2EmergencyScreen';
+import Level1EmergencyScreen from './screens/archives/Level1EmergencyScreen';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
