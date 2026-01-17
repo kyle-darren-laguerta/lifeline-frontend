@@ -1,12 +1,31 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import Dropdown from "../components/Dropdown";
-import { useState } from "react";
-import { TouchableOpacity, Text } from "react-native";
+import { useState, useEffect } from "react";
+import { TouchableOpacity, Text, BackHandler, Alert } from "react-native";
 import EmergencyLevelButton from "../components/EmergencyLevelButton";
 import Header from "../components/Header";
 
 export default function FormScreen({ navigation }) {
     const [emergencyLevel, setEmergencyLevel] = useState("");
+
+    useEffect(() => {
+        const backAction = () => {
+        // Show an alert to confirm they want to exit the emergency
+        Alert.alert("Hold on!", "Are you sure you want to exit? The emergency response is active.", [
+            { text: "Cancel", onPress: () => null, style: "cancel" },
+            { text: "YES, EXIT", onPress: () => BackHandler.exitApp() } // Or navigation.goBack()
+        ]);
+        return true; // Prevents the default back action
+        };
+
+        const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        backAction
+        );
+
+        // Clean up the listener when the screen is unmounted
+        return () => backHandler.remove();
+    }, []);
 
     const emergencyLevels = ["Level 1", "Level 2", "Level 3"];
 
