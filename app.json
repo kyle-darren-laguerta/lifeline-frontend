@@ -35,6 +35,9 @@
         "projectId": "f9ae494a-8a7b-4e23-9047-bce637069e5b"
       }
     },
-    "owner": "lag-kdd"
+    "owner": "lag-kdd",
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
