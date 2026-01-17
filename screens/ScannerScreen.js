@@ -56,9 +56,6 @@ export default function ScannerScreen({ navigation }) {
 
       <View style={styles.unfocusedContainer}>
           <Text style={styles.instructionText}>Scan the student QR Code</Text>
-          {scanned && (
-              <Button title="Scan Again" onPress={() => setScanned(false)} color="white" />
-          )}
       </View>
     </View>
   </View>
@@ -106,7 +103,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderTopWidth: 4,
     borderLeftWidth: 4,
-    borderColor: '#00FF00',
+    borderColor: '#86112e',
   },
   cornerTopRight: {
     position: 'absolute',
@@ -116,7 +113,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderTopWidth: 4,
     borderRightWidth: 4,
-    borderColor: '#00FF00',
+    borderColor: '#86112e',
   },
   cornerBottomLeft: {
     position: 'absolute',
@@ -126,7 +123,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderBottomWidth: 4,
     borderLeftWidth: 4,
-    borderColor: '#00FF00',
+    borderColor: '#86112e',
   },
   cornerBottomRight: {
     position: 'absolute',
@@ -136,7 +133,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderBottomWidth: 4,
     borderRightWidth: 4,
-    borderColor: '#00FF00',
+    borderColor: '#86112e',
   },
   instructionText: {
     color: 'white',
