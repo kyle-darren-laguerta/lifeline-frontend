@@ -45,8 +45,20 @@ export default function FormScreen({ navigation, route }) {
         createOrGetAlarm();
     }, [studentID]);
 
-    const handleCall = (phoneNumber) => {
-        Linking.openURL(`tel:${phoneNumber}`);
+    const handleCall = async (phoneNumber) => {
+        const cleanNumber = phoneNumber.replace(/[^0-9+]/g, '');
+        const url = `tel:${cleanNumber}`;
+
+        try {
+            const supported = await Linking.canOpenURL(url);
+            if (supported) {
+                await Linking.openURL(url);
+            } else {
+                Alert.alert("Unable to Call", "This device cannot make phone calls.");
+            }
+        } catch (error) {
+            Alert.alert("Error", "An unexpected error occurred.");
+        }
     };
 
     const emergency = async () => {
