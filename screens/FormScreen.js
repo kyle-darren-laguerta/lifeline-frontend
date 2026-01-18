@@ -19,15 +19,21 @@ export default function FormScreen({ navigation, route }) {
 
     // Contact Data (Can be moved to a separate config file later)
     const emergencyContacts = [
-        { department: "Campus Security", phone: "555-0199", icon: "🛡️" },
-        { department: "Medical Clinic", phone: "555-0122", icon: "🏥" },
-        { department: "Local Fire Dept", phone: "911", icon: "🚒" },
+        { department: "National Emergency", phone: "911", icon: "🛡️" },
+        { department: "CDRRMO", phone: "0956-635-2627", icon: "🛡️" },
+        { department: "PNP", phone: "0998-598-5928", icon: "🛡️" },
+        { department: "JBDAPH ER Tuburan", phone: "0945-296-2595", icon: "🏥" },
+        { department: "ZMIH-ER", phone: "0945-296-2595", icon: "🏥" },
+        { department: "BRHMC", phone: "0977-766-8533", icon: "🏥" },
+        
     ];
+
+    const backend_url = process.env.EXPO_PUBLIC_BACKEND_URL || "http://192.168.1.63:3000";
 
     useEffect(() => {
         async function createOrGetAlarm() {
             try {
-                const response = await fetch(`http://192.168.1.63:3000/alarm/${studentID}`, {
+                const response = await fetch(`${backend_url}/alarm/${studentID}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -44,6 +50,18 @@ export default function FormScreen({ navigation, route }) {
         }
         createOrGetAlarm();
     }, [studentID]);
+
+    useEffect(() => {
+        const backAction = () => {
+            Alert.alert("Hold on!", "Are you sure you want to exit? The emergency response is active.", [
+                { text: "Cancel", style: "cancel" },
+                { text: "YES, EXIT", onPress: () => navigation.goBack() }
+            ]);
+            return true;
+        };
+        const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+        return () => backHandler.remove();
+    }, []);
 
     const handleCall = async (phoneNumber) => {
         const cleanNumber = phoneNumber.replace(/[^0-9+]/g, '');
@@ -62,14 +80,34 @@ export default function FormScreen({ navigation, route }) {
     };
 
     const emergency = async () => {
-        // ... (existing emergency logic)
-        Alert.alert("Emergency Triggered", "Authorities have been notified.");
+        try {
+            const response = await fetch(`backend_url/alarm/${studentID}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ emergency: true, status: 'ongoing' })
+            });
+            const data = await response.json();
+            if (data.success) Alert.alert("Success", "Emergency services notified.");
+        } catch (err) {
+            console.log("Error: " + err.message);
+        }
     };
 
     const falseAlarm = async () => {
-        // ... (existing falseAlarm logic)
-        Alert.alert("Resolved", "This incident has been marked as a false alarm.");
-        navigation.goBack();
+        try {
+            const response = await fetch(`backend_url/alarm/${currentAlarmId}/false`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ authority: 'STUDENT' })
+            });
+            const data = await response.json();
+            if (data.success) {
+                Alert.alert("Resolved", "Marked as false alarm.");
+                navigation.goBack();
+            }
+        } catch (err) {
+            console.log("Error: " + err.message);
+        }
     };
 
     return (
@@ -94,15 +132,15 @@ export default function FormScreen({ navigation, route }) {
                 <View style={styles.actionSection}>
                     <Text style={styles.sectionTitle}>Immediate Actions</Text>
                     <EmergencyLevelButton 
-                        color="#7a0000" 
+                        color="#f61e1e" 
                         imgPath={require("../assets/images/emergency-icon.png")} 
                         headerText={"Notify as Emergency"} 
                         onPress={emergency}
                     />
                     <View style={{ height: 12 }} />
                     <EmergencyLevelButton 
-                        color="#147a00" 
-                        imgPath={require("../assets/images/notify-icon.png")} 
+                        color="#7e0000" 
+                        imgPath={require("../assets/images/false-alarm-icon.png")} 
                         headerText={"False Alarm"} 
                         onPress={falseAlarm}
                     />
