@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ScannerScreen({ navigation }) {
   const [permission, requestPermission] = useCameraPermissions();
-  const [scanned, setScanned] = useState(false);
+  const [instructionText, setInstructionText] = useState("Scan the student QR Code");
 
   if (!permission?.granted) {
     return (
@@ -25,9 +25,15 @@ export default function ScannerScreen({ navigation }) {
       />
     <CameraView
       style={StyleSheet.absoluteFillObject}
-      onBarcodeScanned={scanned ? undefined : ({ data }) => {
-        setScanned(true);
-        alert(`Scanned: ${data}`);
+      onBarcodeScanned={({ data }) => {
+        if (/[^a-zA-Z0-9-]/.test(data)) {
+          setInstructionText("This is not a valid ID");
+          setTimeout(() => {
+            setInstructionText("Scan the student QR Code");
+          }, 2000);
+          return;
+        }
+
         navigation.navigate("FormScreen", { studentID: data });
       }}
       barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
@@ -55,7 +61,7 @@ export default function ScannerScreen({ navigation }) {
       </View>
 
       <View style={styles.unfocusedContainer}>
-          <Text style={styles.instructionText}>Scan the student QR Code</Text>
+          <Text style={styles.instructionText}>{instructionText}</Text>
       </View>
     </View>
   </View>
