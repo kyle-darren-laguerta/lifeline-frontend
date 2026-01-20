@@ -13,11 +13,13 @@ import {
 import Dropdown from "../components/Dropdown";
 import EmergencyLevelButton from "../components/EmergencyLevelButton";
 import Header from "../components/Header";
+import EmergencyBorder from "../components/EmergencyBorder";
 
 export default function FormScreen({ navigation, route }) {
     const { studentID } = route.params;
     const [currentAlarmId, setCurrentAlarmId] = useState("");
     const [isAlarming, setIsAlarming] = useState(false);
+    const [isEmergencyActive, setIsEmergenycActive] = useState(false);
     const intervalRef = useRef();
 
     // Contact Data (Can be moved to a separate config file later)
@@ -91,6 +93,7 @@ export default function FormScreen({ navigation, route }) {
             });
             const data = await response.json();
             startAlarm();
+            setIsEmergenycActive(true);
             if (data.success) Alert.alert("Success", "Emergency services notified.");
             setTimeout(() => {
                 stopAlarm();
@@ -190,6 +193,7 @@ export default function FormScreen({ navigation, route }) {
                     ))}
                 </View>
             </ScrollView>
+            <EmergencyBorder active={isEmergencyActive}/>
         </SafeAreaView>
     );
 }
