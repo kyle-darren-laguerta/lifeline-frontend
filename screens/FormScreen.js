@@ -11,6 +11,7 @@ import {
     Linking, // Added to allow clicking phone numbers
     TouchableOpacity,
     ActivityIndicator,
+    TextInput
 } from "react-native";
 import Dropdown from "../components/Dropdown";
 import EmergencyLevelButton from "../components/EmergencyLevelButton";
@@ -25,6 +26,8 @@ export default function FormScreen({ navigation, route }) {
     const [isEmergencyActive, setIsEmergenycActive] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [incidentMessage, setIncidentMessage] = useState('');
+    const [selectedType, setSelectedType] = useState('');
     const intervalRef = useRef();
 
     // Contact Data (Can be moved to a separate config file later)
@@ -170,18 +173,43 @@ export default function FormScreen({ navigation, route }) {
                         <Text style={styles.label}>Student ID:</Text>
                         <Text style={styles.value}>{studentID}</Text>
                     </View>
+
                     <Dropdown 
-                        options={["1", "2", "3", "4"]}
+                        options={["1", "2", "3"]}
                         placeHolder={"Select emergency type"} 
-                        style={{ marginBottom: 3 }}
-                        onSelect={async (item) => {
+                        style={{ marginBottom: 1 }} // Increased margin for spacing
+                        onSelect={(item) => setSelectedType(item)}
+                    />
+
+                    <TouchableOpacity style={{ alignItems: "center", }} onPress={() => setModalVisible(true)}>
+                        <Text style={{ textDecorationLine: "underline", color: "#ababab", fontSize: 13, }}>{"Learn more about emergency types ⓘ"}</Text>
+                    </TouchableOpacity>
+
+                    <View style={{ alignItems: "center", }}>
+                        <TextInput
+                            style={styles.textInput}
+                            placeholder="Describe the incident (optional)..."
+                            placeholderTextColor="#7d7a7a"
+                            multiline={true}
+                            numberOfLines={3}
+                            value={incidentMessage}
+                            onChangeText={setIncidentMessage}
+                        />
+                    </View>
+                    <TouchableOpacity 
+                        style={[
+                            styles.submitButton, 
+                            (!incidentMessage && !selectedType) && styles.submitButtonDisabled
+                        ]} 
+                        onPress={
+                        async () => {
                             try {
                                 const response = await fetch(`${backend_url}/alarm/${studentID}`, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
-                                        emergency: parseInt(item),
-                                        message: 'none',
+                                        emergency: parseInt(selectedType),
+                                        message: incidentMessage || 'none', // Use the state variable here
                                         status: 'ongoing'
                                     })
                                 });
@@ -193,12 +221,16 @@ export default function FormScreen({ navigation, route }) {
                             } catch (err) {
                                 console.log("Failed to send the alarm: " + err.message);
                             }
-                        }}
-                    />
-                    <TouchableOpacity style={{ alignItems: "center", }} onPress={() => setModalVisible(true)}>
-                        <Text style={{ textDecorationLine: "underline", color: "#ababab", fontSize: 13, }}>{"Learn more about emergency types ⓘ"}</Text>
+                        }
+                        }
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            <ActivityIndicator color="#fff" size="small" />
+                        ) : (
+                            <Text style={styles.submitButtonText}>Send Incident Details</Text>
+                        )}
                     </TouchableOpacity>
-                    
                 </View>
 
                 {/* Main Actions */}
@@ -321,5 +353,39 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         paddingHorizontal: 40,
         marginTop: 5,
-    }
+    },
+    submitButton: {
+        backgroundColor: '#007AFF', // Standard iOS Blue or choose #e74c3c for Alert Red
+        borderRadius: 8,
+        paddingVertical: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 15,
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 1.41,
+    },
+    submitButtonDisabled: {
+        backgroundColor: '#cccccc',
+    },
+    submitButtonText: {
+        color: '#ffffff',
+        fontSize: 15,
+        fontWeight: 'bold',
+    },
+    textInput: {
+        backgroundColor: '#f9f9f9',
+        borderRadius: 8,
+        padding: 12,
+        marginTop: 20,
+        width: "90%",
+        borderWidth: 1,
+        borderColor: '#e0e0e0',
+        fontSize: 14,
+        color: '#333',
+        textAlignVertical: 'top', // Ensures text starts at the top for multiline
+        minHeight: 80,
+    },
 });
