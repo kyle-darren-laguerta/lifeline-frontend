@@ -8,18 +8,21 @@ import {
     View, 
     StyleSheet, 
     ScrollView, 
-    Linking // Added to allow clicking phone numbers
+    Linking, // Added to allow clicking phone numbers
+    TouchableOpacity
 } from "react-native";
 import Dropdown from "../components/Dropdown";
 import EmergencyLevelButton from "../components/EmergencyLevelButton";
 import Header from "../components/Header";
 import EmergencyBorder from "../components/EmergencyBorder";
+import EmergencyInfoModal from "../components/EmergencyInfoModal";
 
 export default function FormScreen({ navigation, route }) {
     const { studentID } = route.params;
     const [currentAlarmId, setCurrentAlarmId] = useState("");
     const [isAlarming, setIsAlarming] = useState(false);
     const [isEmergencyActive, setIsEmergenycActive] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
     const intervalRef = useRef();
 
     // Contact Data (Can be moved to a separate config file later)
@@ -111,7 +114,9 @@ export default function FormScreen({ navigation, route }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ authority: 'STUDENT' })
             });
+            console.log("Waiting For Response");
             const data = await response.json();
+            console.log("Server Responded");
             if (data.success) {
                 Alert.alert("Resolved", "Marked as false alarm.");
                 navigation.goBack();
@@ -148,9 +153,34 @@ export default function FormScreen({ navigation, route }) {
                         <Text style={styles.value}>{studentID}</Text>
                     </View>
                     <Dropdown 
-                        options={["Medical", "Fire", "Security", "Other"]} 
+                        options={["Medical", "Fire", "Security", "Other"]}
                         placeHolder={"Select emergency type"} 
+                        style={{ marginBottom: 3 }}
+                        onSelect={async (item) => {
+                            try {
+                                const response = await fetch(`${backend_url}/alarm/${studentID}`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        emergency: false,
+                                        message: { type: item, additionalInfo: '' },
+                                        status: 'ongoing'
+                                    })
+                                });
+                                const data = await response.json();
+                                if (data.success) {
+                                    console.log("Type sent");
+                                    setCurrentAlarmId(data.alarm.id);
+                                }
+                            } catch (err) {
+                                console.log("Failed to send the alarm: " + err.message);
+                            }
+                        }}
                     />
+                    <TouchableOpacity style={{ alignItems: "center", }} onPress={() => setModalVisible(true)}>
+                        <Text style={{ textDecorationLine: "underline", color: "#ababab", fontSize: 13, }}>{"Learn more about emergency types ⓘ"}</Text>
+                    </TouchableOpacity>
+                    
                 </View>
 
                 {/* Main Actions */}
@@ -193,6 +223,7 @@ export default function FormScreen({ navigation, route }) {
                     ))}
                 </View>
             </ScrollView>
+            { modalVisible && <EmergencyInfoModal visible={modalVisible} onClose={setModalVisible}/> }
             <EmergencyBorder active={isEmergencyActive}/>
         </SafeAreaView>
     );
