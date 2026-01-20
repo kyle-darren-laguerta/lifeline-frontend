@@ -9,7 +9,8 @@ import {
     StyleSheet, 
     ScrollView, 
     Linking, // Added to allow clicking phone numbers
-    TouchableOpacity
+    TouchableOpacity,
+    ActivityIndicator,
 } from "react-native";
 import Dropdown from "../components/Dropdown";
 import EmergencyLevelButton from "../components/EmergencyLevelButton";
@@ -23,6 +24,7 @@ export default function FormScreen({ navigation, route }) {
     const [isAlarming, setIsAlarming] = useState(false);
     const [isEmergencyActive, setIsEmergenycActive] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const intervalRef = useRef();
 
     // Contact Data (Can be moved to a separate config file later)
@@ -38,22 +40,38 @@ export default function FormScreen({ navigation, route }) {
 
     const backend_url = process.env.EXPO_PUBLIC_BACKEND_URL || "http://192.168.1.63:3000";
 
+    // POST request payload:
+    // { emergency: int, message: string, status: string }
     useEffect(() => {
         async function createOrGetAlarm() {
+            console.log("--- Request Started ---");
+            console.log(`Target URL: ${backend_url}/alarm/${studentID}`);
+            console.log("Status: Sending request... (If using Render Free Tier, this may take 1 minute to wake up)");
+            
+            setIsLoading(true); // Start loading UI
             try {
                 const response = await fetch(`${backend_url}/alarm/${studentID}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        emergency: false,
-                        message: { type: '', additionalInfo: '' },
+                        emergency: 0,
+                        message: 'none',
                         status: 'ongoing'
                     })
                 });
                 const data = await response.json();
+                console.log("--- Request Successful ---");
+                console.log("Server Response:", data);
                 if (data.success) setCurrentAlarmId(data.alarm.id);
             } catch (err) {
-                console.log("Failed to send the alarm: " + err.message);
+                console.error("--- Request Failed ---");
+                console.error("Error Detail:", err.message);
+                
+                if (err.message === "Network request failed") {
+                    Alert.alert("Server Sleeping", "The server is waking up. Please wait 30 seconds and try again.");
+                }
+            } finally {
+                setIsLoading(false);
             }
         }
         createOrGetAlarm();
@@ -153,7 +171,7 @@ export default function FormScreen({ navigation, route }) {
                         <Text style={styles.value}>{studentID}</Text>
                     </View>
                     <Dropdown 
-                        options={["Medical", "Fire", "Security", "Other"]}
+                        options={["1", "2", "3", "4"]}
                         placeHolder={"Select emergency type"} 
                         style={{ marginBottom: 3 }}
                         onSelect={async (item) => {
@@ -162,8 +180,8 @@ export default function FormScreen({ navigation, route }) {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
-                                        emergency: false,
-                                        message: { type: item, additionalInfo: '' },
+                                        emergency: parseInt(item),
+                                        message: 'none',
                                         status: 'ongoing'
                                     })
                                 });
@@ -223,6 +241,13 @@ export default function FormScreen({ navigation, route }) {
                     ))}
                 </View>
             </ScrollView>
+            {isLoading && (
+                <View style={styles.loadingOverlay}>
+                    <ActivityIndicator size="large" color="#e74c3c" />
+                    <Text style={styles.loadingText}>Connecting to server...</Text>
+                    <Text style={styles.subLoadingText}>Initial request may take up to 1 minute to wake up the service.</Text>
+                </View>
+            )}
             { modalVisible && <EmergencyInfoModal visible={modalVisible} onClose={setModalVisible}/> }
             <EmergencyBorder active={isEmergencyActive}/>
         </SafeAreaView>
@@ -276,5 +301,25 @@ const styles = StyleSheet.create({
         color: '#007AFF',
         fontWeight: 'bold',
         padding: 8,
+    },
+        loadingOverlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    subLoadingText: {
+        fontSize: 12,
+        color: '#666',
+        textAlign: 'center',
+        paddingHorizontal: 40,
+        marginTop: 5,
     }
 });
