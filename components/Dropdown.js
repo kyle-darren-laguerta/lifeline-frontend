@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, FlatList, Modal } from 'react-native';
 
-export default function Dropdown({ options, placeHolder, onSelect }) {
+export default function Dropdown({ options, placeHolder, onSelect, style }) {
   const [visible, setVisible] = useState(false);
   const [selectedValue, setSelectedValue] = useState(placeHolder);
 
@@ -11,11 +11,11 @@ export default function Dropdown({ options, placeHolder, onSelect }) {
   }, [placeHolder]);
 
   return (
-    <View style={{ padding: 20, alignItems: "center"}}>
+    <View style={[{ alignItems: "center", width: '100%' }, style]}>
       {/* The Input "Box" */}
       <Pressable
         onPress={() => setVisible(!visible)}
-        style={{
+        style={[{
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -24,7 +24,7 @@ export default function Dropdown({ options, placeHolder, onSelect }) {
           paddingHorizontal: 15,
           width: '90%',
           height: 45,
-        }}
+        }, style]}
       >
         <Text style={{ fontSize: 16, color: selectedValue === placeHolder ? '#999' : '#000' }}>
           {selectedValue}
