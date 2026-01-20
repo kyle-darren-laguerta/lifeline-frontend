@@ -28,6 +28,8 @@ export default function FormScreen({ navigation, route }) {
     const [isLoading, setIsLoading] = useState(false);
     const [incidentMessage, setIncidentMessage] = useState('');
     const [selectedType, setSelectedType] = useState('');
+    const [isStudentInfoLoading, setIsStudentInfoLoading] = useState(false);
+    const [studentData, setStudentData] = useState(null);
     const intervalRef = useRef();
 
     // Contact Data (Can be moved to a separate config file later)
@@ -81,6 +83,31 @@ export default function FormScreen({ navigation, route }) {
     }, [studentID]);
 
     useEffect(() => {
+        const fetchStudentDashboard = async () => {
+            try {
+                setIsStudentInfoLoading(true);
+                // Replace backend_url and studentID with your variables
+                const response = await fetch(`${backend_url}/dashboard/student/${studentID}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    setStudentData(data); // This sets the entire object (role, student, ongoingAlarm)
+                } else {
+                    console.error("Server error:", data.message);
+                }
+            } catch (error) {
+                console.error("Network error:", error);
+            } finally {
+                setIsStudentInfoLoading(false);
+            }
+        };
+
+        if (studentID) {
+            fetchStudentDashboard();
+        }
+    }, [studentID]);
+
+    useEffect(() => {
         const backAction = () => {
             Alert.alert("Hold on!", "Are you sure you want to exit? The emergency response is active.", [
                 { text: "Cancel", style: "cancel" },
@@ -108,25 +135,27 @@ export default function FormScreen({ navigation, route }) {
         }
     };
 
-    const emergency = async () => {
-        try {
-            const response = await fetch(`${backend_url}/alarm/${studentID}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ emergency: true, status: 'ongoing' })
-            });
-            const data = await response.json();
-            startAlarm();
-            setIsEmergenycActive(true);
-            if (data.success) Alert.alert("Success", "Emergency services notified.");
-            setTimeout(() => {
-                stopAlarm();
-            }, 3000);
+    // Deprecated
+    
+    // const emergency = async () => {
+    //     try {
+    //         const response = await fetch(`${backend_url}/alarm/${studentID}`, {
+    //             method: 'POST',
+    //             headers: { 'Content-Type': 'application/json' },
+    //             body: JSON.stringify({ emergency: true, status: 'ongoing' })
+    //         });
+    //         const data = await response.json();
+    //         startAlarm();
+    //         setIsEmergenycActive(true);
+    //         if (data.success) Alert.alert("Success", "Emergency services notified.");
+    //         setTimeout(() => {
+    //             stopAlarm();
+    //         }, 3000);
 
-        } catch (err) {
-            console.log("Error: " + err.message);
-        }
-    };
+    //     } catch (err) {
+    //         console.log("Error: " + err.message);
+    //     }
+    // };
 
     const falseAlarm = async () => {
         try {
@@ -168,21 +197,46 @@ export default function FormScreen({ navigation, route }) {
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 {/* Student Info Section */}
                 <View style={styles.infoCard}>
-                    <Text style={styles.cardTitle}>Incident Context</Text>
+                    <Text style={styles.cardTitle}>Student Information</Text>
                     <View style={styles.row}>
                         <Text style={styles.label}>Student ID:</Text>
                         <Text style={styles.value}>{studentID}</Text>
                     </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Name:</Text>
+                        <Text style={styles.value}>{studentData?.student?.name}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Age:</Text>
+                        <Text style={styles.value}>{studentData?.student?.age}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Emergency Contact:</Text>
+                        <Text style={styles.value}>{studentData?.student?.emergencyContact}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Medical History:</Text>
+                        <Text style={styles.value}>{studentData?.student?.medicalHistory}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Allergies:</Text>
+                        <Text style={styles.value}>{studentData?.student?.allergies}</Text>
+                    </View>
+                </View>
 
+                {/* Incident Details Form */}
+                <View style={styles.formCard}>
+                    <Text style={styles.cardTitle}>Incident Details</Text>
+                    
                     <Dropdown 
                         options={["1", "2", "3"]}
                         placeHolder={"Select emergency type"} 
-                        style={{ marginBottom: 1 }} // Increased margin for spacing
+                        style={{ marginBottom: 12 }}
                         onSelect={(item) => setSelectedType(item)}
                     />
 
-                    <TouchableOpacity style={{ alignItems: "center", }} onPress={() => setModalVisible(true)}>
-                        <Text style={{ textDecorationLine: "underline", color: "#ababab", fontSize: 13, }}>{"Learn more about emergency types ⓘ"}</Text>
+                    <TouchableOpacity style={{ alignItems: "center", marginBottom: 16 }} onPress={() => setModalVisible(true)}>
+                        <Text style={{ textDecorationLine: "underline", color: "#86112e", fontSize: 12, fontWeight: '600' }}>{"Learn more about emergency types ⓘ"}</Text>
                     </TouchableOpacity>
 
                     <View style={{ alignItems: "center", }}>
@@ -237,14 +291,7 @@ export default function FormScreen({ navigation, route }) {
                 <View style={styles.actionSection}>
                     <Text style={styles.sectionTitle}>Immediate Actions</Text>
                     <EmergencyLevelButton 
-                        color="#f61e1e" 
-                        imgPath={require("../assets/images/emergency-icon.png")} 
-                        headerText={"Notify as Emergency"} 
-                        onPress={emergency}
-                    />
-                    <View style={{ height: 12 }} />
-                    <EmergencyLevelButton 
-                        color="#7e0000" 
+                        color="#86112e" 
                         imgPath={require("../assets/images/false-alarm-icon.png")} 
                         headerText={"False Alarm"} 
                         onPress={falseAlarm}
@@ -287,105 +334,188 @@ export default function FormScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f4f4f4' },
-    scrollContent: { padding: 20 },
+    container: { flex: 1, backgroundColor: '#f8f9fa' },
+    scrollContent: { padding: 16, paddingBottom: 40 },
     infoCard: {
         backgroundColor: '#fff',
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 20,
-        elevation: 2,
+        borderRadius: 16,
+        padding: 20,
+        marginBottom: 16,
+        elevation: 3,
+        shadowColor: '#86112e',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+        borderLeftWidth: 4,
+        borderLeftColor: '#86112e',
     },
-    cardTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 12, color: '#444' },
-    row: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 },
-    label: { color: '#666' },
-    value: { fontWeight: 'bold' },
+    formCard: {
+        backgroundColor: '#fff',
+        borderRadius: 16,
+        padding: 20,
+        marginBottom: 24,
+        elevation: 3,
+        shadowColor: '#86112e',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+        borderLeftWidth: 4,
+        borderLeftColor: '#f39c12',
+    },
+    cardTitle: { 
+        fontSize: 18, 
+        fontWeight: '700', 
+        marginBottom: 18, 
+        color: '#86112e',
+        letterSpacing: 0.3,
+    },
+    row: { 
+        flexDirection: 'row', 
+        justifyContent: 'space-between', 
+        marginBottom: 14,
+        paddingBottom: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f0f0f0',
+    },
+    label: { 
+        color: '#666', 
+        fontSize: 13,
+        fontWeight: '500',
+        flex: 1,
+    },
+    value: { 
+        fontWeight: '600', 
+        color: '#333',
+        fontSize: 14,
+        flex: 1,
+        textAlign: 'right',
+    },
     
-    actionSection: { marginBottom: 30 },
+    actionSection: { marginBottom: 32 },
     sectionTitle: { 
-        fontSize: 14, 
-        fontWeight: 'bold', 
-        color: '#888', 
-        marginBottom: 10, 
-        textTransform: 'uppercase' 
+        fontSize: 12, 
+        fontWeight: '700', 
+        color: '#86112e', 
+        marginBottom: 14, 
+        textTransform: 'uppercase',
+        letterSpacing: 1,
     },
 
     directorySection: {
         backgroundColor: '#fff',
-        borderRadius: 12,
-        padding: 16,
-        borderWidth: 1,
-        borderColor: '#e0e0e0',
+        borderRadius: 16,
+        padding: 20,
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.06,
+        shadowRadius: 6,
+        marginBottom: 24,
     },
     contactRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 12,
+        paddingVertical: 14,
+        paddingHorizontal: 8,
         borderBottomWidth: 1,
-        borderBottomColor: '#f0f0f0',
+        borderBottomColor: '#f5f5f5',
+        marginBottom: 2,
     },
-    contactInfo: { flexDirection: 'row', alignItems: 'center' },
-    contactIcon: { fontSize: 24, marginRight: 12 },
-    deptName: { fontWeight: '600', color: '#333' },
-    deptPhone: { color: '#666', fontSize: 13 },
+    contactInfo: { 
+        flexDirection: 'row', 
+        alignItems: 'center',
+        flex: 1,
+    },
+    contactIcon: { 
+        fontSize: 28, 
+        marginRight: 14,
+        width: 40,
+        textAlign: 'center',
+    },
+    deptName: { 
+        fontWeight: '700', 
+        color: '#1a1a1a',
+        fontSize: 14,
+        marginBottom: 2,
+    },
+    deptPhone: { 
+        color: '#888', 
+        fontSize: 12,
+        fontWeight: '500',
+    },
     callButton: {
-        color: '#007AFF',
-        fontWeight: 'bold',
-        padding: 8,
+        color: '#fff',
+        backgroundColor: '#86112e',
+        fontWeight: '700',
+        paddingVertical: 8,
+        paddingHorizontal: 14,
+        borderRadius: 8,
+        overflow: 'hidden',
+        fontSize: 12,
+        elevation: 2,
+        shadowColor: '#86112e',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
     },
-        loadingOverlay: {
+    loadingOverlay: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 1000,
     },
     loadingText: {
-        marginTop: 10,
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
+        marginTop: 16,
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#fff',
     },
     subLoadingText: {
         fontSize: 12,
-        color: '#666',
+        color: '#ddd',
         textAlign: 'center',
         paddingHorizontal: 40,
-        marginTop: 5,
+        marginTop: 8,
     },
     submitButton: {
-        backgroundColor: '#007AFF', // Standard iOS Blue or choose #e74c3c for Alert Red
-        borderRadius: 8,
-        paddingVertical: 12,
+        backgroundColor: '#86112e',
+        borderRadius: 12,
+        paddingVertical: 14,
+        paddingHorizontal: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 15,
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.2,
-        shadowRadius: 1.41,
+        marginTop: 20,
+        elevation: 4,
+        shadowColor: '#86112e',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 6,
     },
     submitButtonDisabled: {
-        backgroundColor: '#cccccc',
+        backgroundColor: '#d0d0d0',
+        elevation: 1,
+        shadowOpacity: 0.1,
     },
     submitButtonText: {
         color: '#ffffff',
         fontSize: 15,
-        fontWeight: 'bold',
+        fontWeight: '700',
+        letterSpacing: 0.3,
     },
     textInput: {
-        backgroundColor: '#f9f9f9',
-        borderRadius: 8,
-        padding: 12,
-        marginTop: 20,
+        backgroundColor: '#f5f7fa',
+        borderRadius: 12,
+        padding: 14,
+        marginTop: 18,
         width: "90%",
-        borderWidth: 1,
-        borderColor: '#e0e0e0',
+        borderWidth: 2,
+        borderColor: '#e8e8e8',
         fontSize: 14,
         color: '#333',
-        textAlignVertical: 'top', // Ensures text starts at the top for multiline
-        minHeight: 80,
+        textAlignVertical: 'top',
+        minHeight: 100,
+        fontWeight: '500',
     },
 });
