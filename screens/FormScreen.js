@@ -1,5 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import * as Haptics from 'expo-haptics';
 import { 
     Text, 
     BackHandler, 
@@ -16,6 +17,8 @@ import Header from "../components/Header";
 export default function FormScreen({ navigation, route }) {
     const { studentID } = route.params;
     const [currentAlarmId, setCurrentAlarmId] = useState("");
+    const [isAlarming, setIsAlarming] = useState(false);
+    const intervalRef = useRef();
 
     // Contact Data (Can be moved to a separate config file later)
     const emergencyContacts = [
@@ -81,13 +84,18 @@ export default function FormScreen({ navigation, route }) {
 
     const emergency = async () => {
         try {
-            const response = await fetch(`backend_url/alarm/${studentID}`, {
+            const response = await fetch(`${backend_url}/alarm/${studentID}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ emergency: true, status: 'ongoing' })
             });
             const data = await response.json();
+            startAlarm();
             if (data.success) Alert.alert("Success", "Emergency services notified.");
+            setTimeout(() => {
+                stopAlarm();
+            }, 3000);
+
         } catch (err) {
             console.log("Error: " + err.message);
         }
@@ -95,7 +103,7 @@ export default function FormScreen({ navigation, route }) {
 
     const falseAlarm = async () => {
         try {
-            const response = await fetch(`backend_url/alarm/${currentAlarmId}/false`, {
+            const response = await fetch(`${backend_url}/alarm/${currentAlarmId}/false`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ authority: 'STUDENT' })
@@ -109,6 +117,20 @@ export default function FormScreen({ navigation, route }) {
             console.log("Error: " + err.message);
         }
     };
+
+    const startAlarm = () => {
+        setIsAlarming(true);
+
+        intervalRef.current = setInterval(() => {
+            // Use Haptics for a stronger feel or Vibration.vibrate()
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        }, 100); 
+  };
+
+  const stopAlarm = () => {
+        setIsAlarming(false);
+        if (intervalRef.current) clearInterval(intervalRef.current);
+  };
 
     return (
         <SafeAreaView style={styles.container}>

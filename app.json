@@ -25,7 +25,10 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.lagkdd.lifelinefrontend"
+      "package": "com.lagkdd.lifelinefrontend",
+      "permissions": [
+        "VIBRATE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
