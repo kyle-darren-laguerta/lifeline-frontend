@@ -26,6 +26,8 @@ export default function FormScreen({ navigation, route }) {
     const [isEmergencyActive, setIsEmergenycActive] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isReportRequestLoading, setIsReportRequestLoading] = useState(false);
+    const [isFalseAlarmRequestLoading, setIsFalseAlarmRequestLoading] = useState(false);
     const [incidentMessage, setIncidentMessage] = useState('');
     const [selectedType, setSelectedType] = useState('');
     const [isStudentInfoLoading, setIsStudentInfoLoading] = useState(false);
@@ -45,6 +47,7 @@ export default function FormScreen({ navigation, route }) {
 
     const backend_url = process.env.EXPO_PUBLIC_BACKEND_URL || "http://192.168.1.63:3000";
 
+    // This POST request is automatically send when the app redirect to this screen
     // POST request payload:
     // { emergency: int, message: string, status: string }
     useEffect(() => {
@@ -82,6 +85,7 @@ export default function FormScreen({ navigation, route }) {
         createOrGetAlarm();
     }, [studentID]);
 
+    // GET the student data
     useEffect(() => {
         const fetchStudentDashboard = async () => {
             try {
@@ -159,6 +163,7 @@ export default function FormScreen({ navigation, route }) {
 
     const falseAlarm = async () => {
         try {
+            setIsFalseAlarmRequestLoading(true);
             const response = await fetch(`${backend_url}/alarm/${currentAlarmId}/false`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -172,7 +177,10 @@ export default function FormScreen({ navigation, route }) {
                 navigation.goBack();
             }
         } catch (err) {
+            Alert.alert("Server Error", "The server is unresponsive");
             console.log("Error: " + err.message);
+        } finally {
+            setIsFalseAlarmRequestLoading(false);
         }
     };
 
@@ -258,6 +266,7 @@ export default function FormScreen({ navigation, route }) {
                         onPress={
                         async () => {
                             try {
+                                setIsReportRequestLoading(true);
                                 const response = await fetch(`${backend_url}/alarm/${studentID}`, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
@@ -273,7 +282,10 @@ export default function FormScreen({ navigation, route }) {
                                     setCurrentAlarmId(data.alarm.id);
                                 }
                             } catch (err) {
+                                Alert.alert("Server Error", "The server is unresponsive");
                                 console.log("Failed to send the alarm: " + err.message);
+                            } finally {
+                                setIsReportRequestLoading(false);
                             }
                         }
                         }
@@ -325,6 +337,20 @@ export default function FormScreen({ navigation, route }) {
                     <ActivityIndicator size="large" color="#e74c3c" />
                     <Text style={styles.loadingText}>Connecting to server...</Text>
                     <Text style={styles.subLoadingText}>Initial request may take up to 1 minute to wake up the service.</Text>
+                </View>
+            )}
+            {isFalseAlarmRequestLoading && (
+                <View style={styles.loadingOverlay}>
+                    <ActivityIndicator size="large" color="#e74c3c" />
+                    <Text style={styles.loadingText}>Notifying as false alarm...</Text>
+                    <Text style={styles.subLoadingText}>Please standby.</Text>
+                </View>
+            )}
+            {isReportRequestLoading && (
+                <View style={styles.loadingOverlay}>
+                    <ActivityIndicator size="large" color="#e74c3c" />
+                    <Text style={styles.loadingText}>Sending incident details...</Text>
+                    <Text style={styles.subLoadingText}>Make sure the details you input is correct.</Text>
                 </View>
             )}
             { modalVisible && <EmergencyInfoModal visible={modalVisible} onClose={setModalVisible}/> }
