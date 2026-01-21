@@ -17,6 +17,26 @@ export default function ScannerScreen({ navigation }) {
     );
   }
 
+  const separateUrlAndId = (urlString) => {
+      try {
+          const url = new URL(urlString);
+          
+          return {
+              link: `${url.origin}${url.pathname}`,
+              id: url.searchParams.get('schoolId'),
+              isValid: true
+          };
+      } catch (error) {
+          // This runs if the input is not a valid URL
+          return {
+              link: null,
+              id: null,
+              isValid: false,
+              error: "Invalid URL provided"
+          };
+      }
+  };
+
   return (
   <View style={styles.container}>
     <StatusBar 
@@ -26,15 +46,24 @@ export default function ScannerScreen({ navigation }) {
     <CameraView
       style={StyleSheet.absoluteFillObject}
       onBarcodeScanned={({ data }) => {
-        if (/[^a-zA-Z0-9-]/.test(data)) {
-          setInstructionText("This is not a valid ID");
-          setTimeout(() => {
-            setInstructionText("Scan the student QR Code");
-          }, 2000);
-          return;
+        // if (/[^a-zA-Z0-9-]/.test(data)) {
+        //   setInstructionText("This is not a valid ID");
+        //   setTimeout(() => {
+        //     setInstructionText("Scan the student QR Code");
+        //   }, 2000);
+        //   return;
+        // }
+        const { link, id } = separateUrlAndId(data);
+
+        if (link === null || id === null || id.length !== 12) {
+            setInstructionText("This is not a valid ID");
+            setTimeout(() => {
+              setInstructionText("Scan the student QR Code");
+            }, 2000);
+            return;
         }
 
-        navigation.navigate("FormScreen", { studentID: data });
+        navigation.navigate("FormScreen", { studentID: id });
       }}
       barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
     />
