@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.08,
         shadowRadius: 8,
         borderLeftWidth: 4,
-        borderLeftColor: '#f39c12',
+        borderLeftColor: '#86112e',
     },
     cardTitle: { 
         fontSize: 18, 
