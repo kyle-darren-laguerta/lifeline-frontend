@@ -12,9 +12,9 @@ import { AntDesign } from '@expo/vector-icons'; // Built-in with Expo
 const EmergencyInfoModal = ({ visible, onClose }) => {
   const emergencyLevels = [
     {
-      type: "TYPE 1: Code Green",
+      type: "TYPE 1:",
       subtitle: "Minor / Resolvable Emergency",
-      color: "#2ecc71",
+      color: "#FFD700",
       items: [
         "Minor cuts or bruises",
         "Mild headache or stomach ache",
@@ -23,9 +23,9 @@ const EmergencyInfoModal = ({ visible, onClose }) => {
       ]
     },
     {
-      type: "TYPE 2: Code Yellow",
+      type: "TYPE 2:",
       subtitle: "Moderate / Intense Emergency",
-      color: "#f1c40f",
+      color: "#E65100",
       items: [
         "Student faints or has a seizure",
         "Severe asthma attack",
@@ -34,9 +34,9 @@ const EmergencyInfoModal = ({ visible, onClose }) => {
       ]
     },
     {
-      type: "TYPE 3: Code Red",
+      type: "TYPE 3:",
       subtitle: "Critical / Deadly Emergency",
-      color: "#e74c3c",
+      color: "#B71C1C",
       items: [
         "Natural disasters endangering lives (flood, typhoon, etc.)",
         "Armed intruders",
