@@ -212,23 +212,23 @@ export default function FormScreen({ navigation, route }) {
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.label}>Name:</Text>
-                        <Text style={styles.value}>{studentData?.student?.name}</Text>
+                        <Text style={styles.value}>{studentData?.student?.name || "N/A"}</Text>
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.label}>Age:</Text>
-                        <Text style={styles.value}>{studentData?.student?.age}</Text>
+                        <Text style={styles.value}>{studentData?.student?.age || "N/A"}</Text>
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.label}>Emergency Contact:</Text>
-                        <Text style={styles.value}>{studentData?.student?.emergencyContact}</Text>
+                        <Text style={styles.value}>{studentData?.student?.emergencyContact || "N/A"}</Text>
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.label}>Medical History:</Text>
-                        <Text style={styles.value}>{studentData?.student?.medicalHistory}</Text>
+                        <Text style={styles.value}>{studentData?.student?.medicalHistory || "N/A"}</Text>
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.label}>Allergies:</Text>
-                        <Text style={styles.value}>{studentData?.student?.allergies}</Text>
+                        <Text style={styles.value}>{studentData?.student?.allergies || "N/A"}</Text>
                     </View>
                 </View>
 
@@ -267,6 +267,7 @@ export default function FormScreen({ navigation, route }) {
                         async () => {
                             try {
                                 setIsReportRequestLoading(true);
+
                                 const response = await fetch(`${backend_url}/alarm/${studentID}`, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
@@ -335,8 +336,8 @@ export default function FormScreen({ navigation, route }) {
             {isLoading && (
                 <View style={styles.loadingOverlay}>
                     <ActivityIndicator size="large" color="#e74c3c" />
-                    <Text style={styles.loadingText}>Connecting to server...</Text>
-                    <Text style={styles.subLoadingText}>Initial request may take up to 1 minute to wake up the service.</Text>
+                    <Text style={styles.loadingText}>Sending the alarm!</Text>
+                    <Text style={styles.subLoadingText}>We are now notifying the staffs and admin and requesting for student data.</Text>
                 </View>
             )}
             {isFalseAlarmRequestLoading && (
