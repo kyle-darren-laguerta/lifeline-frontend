@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "lifeline-frontend",
+    "name": "LIFELINE",
     "slug": "lifeline-frontend",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#a5183b"
     },
     "ios": {
       "supportsTablet": true,
@@ -22,9 +22,9 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#a5183b"
       },
-      "edgeToEdgeEnabled": true,
+      "edgeToEdgeEnabled": false,
       "package": "com.lagkdd.lifelinefrontend",
       "permissions": [
         "VIBRATE"

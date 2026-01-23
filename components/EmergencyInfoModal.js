@@ -59,7 +59,7 @@ const EmergencyInfoModal = ({ visible, onClose }) => {
           {/* Header with Question Mark Icon */}
           <View style={styles.header}>
             <AntDesign name="questioncircleo" size={24} color="#555" />
-            <Text style={styles.headerTitle}>Emergency Protocols</Text>
+            <Text style={styles.headerTitle}>Emergency Types</Text>
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false}>
