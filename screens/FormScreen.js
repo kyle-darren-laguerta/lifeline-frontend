@@ -6,7 +6,7 @@ import {
     BackHandler, 
     Alert, 
     View, 
-    StyleSheet, 
+    StyleSheet,
     ScrollView, 
     Linking, // Added to allow clicking phone numbers
     TouchableOpacity,
@@ -224,11 +224,11 @@ export default function FormScreen({ navigation, route }) {
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.label}>Medical History:</Text>
-                        <Text style={styles.value}>{studentData?.student?.medicalHistory || "N/A"}</Text>
+                        <Text style={styles.value}>{studentData?.student?.medicalHistory || "No Memdical History Recorded"}</Text>
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.label}>Allergies:</Text>
-                        <Text style={styles.value}>{studentData?.student?.allergies || "N/A"}</Text>
+                        <Text style={styles.value}>{studentData?.student?.allergies || "No known allergies"}</Text>
                     </View>
                 </View>
 
@@ -280,6 +280,7 @@ export default function FormScreen({ navigation, route }) {
                                 const data = await response.json();
                                 if (data.success) {
                                     console.log("Type sent");
+                                    Alert.alert("Success", "Details sent successfully.");
                                     setCurrentAlarmId(data.alarm.id);
                                 }
                             } catch (err) {
@@ -313,7 +314,7 @@ export default function FormScreen({ navigation, route }) {
 
                 {/* Emergency Departments Directory */}
                 <View style={styles.directorySection}>
-                    <Text style={styles.sectionTitle}>Emergency Directory</Text>
+                    <Text style={styles.sectionTitle}>Emergency Hotline Numbers</Text>
                     {emergencyContacts.map((contact, index) => (
                         <View key={index} style={styles.contactRow}>
                             <View style={styles.contactInfo}>
@@ -337,7 +338,7 @@ export default function FormScreen({ navigation, route }) {
                 <View style={styles.loadingOverlay}>
                     <ActivityIndicator size="large" color="#e74c3c" />
                     <Text style={styles.loadingText}>Sending the alarm!</Text>
-                    <Text style={styles.subLoadingText}>We are now notifying the staffs and admin and requesting for student data.</Text>
+                    <Text style={styles.subLoadingText}>We are now notifying the staffs and admin and requesting the student data.</Text>
                 </View>
             )}
             {isFalseAlarmRequestLoading && (

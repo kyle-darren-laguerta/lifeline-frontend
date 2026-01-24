@@ -56,7 +56,7 @@ export default function ScannerScreen({ navigation }) {
         const { link, id } = separateUrlAndId(data);
 
         if (link === null || id === null || id.length !== 12) {
-            setInstructionText("This is not a valid ID");
+            setInstructionText("Invalid QR");
             setTimeout(() => {
               setInstructionText("Scan the student QR Code");
             }, 2000);
