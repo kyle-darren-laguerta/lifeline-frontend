@@ -53,17 +53,22 @@ export default function ScannerScreen({ navigation }) {
         //   }, 2000);
         //   return;
         // }
-        const { link, id } = separateUrlAndId(data);
 
-        if (link === null || id === null || id.length !== 12) {
-            setInstructionText("Invalid QR");
-            setTimeout(() => {
-              setInstructionText("Scan the student QR Code");
-            }, 2000);
-            return;
+        if (data.length === 12 && /^\d+$/.test(data)) {
+          navigation.navigate("FormScreen", { studentID: data });      
+        } else {
+          const { link, id } = separateUrlAndId(data);
+
+          if (link === null || id === null || id.length !== 12) {
+                setInstructionText("Invalid QR");
+                setTimeout(() => {
+                  setInstructionText("Scan the student QR Code");
+                }, 2000);
+                return;
+          }
+
+          navigation.navigate("FormScreen", { studentID: id }); 
         }
-
-        navigation.navigate("FormScreen", { studentID: id });
       }}
       barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
     />
