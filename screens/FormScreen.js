@@ -72,6 +72,8 @@ export default function FormScreen({ navigation, route }) {
                 console.log("Server Response:", data);
                 if (data.success) setCurrentAlarmId(data.alarm.id);
             } catch (err) {
+                Alert.alert("LRN Not Found", `The student with LRN ${studentID} doesn't exist in the database.`);
+                navigation.goBack();
                 console.error("--- Request Failed ---");
                 console.error("Error Detail:", err.message);
                 
@@ -97,6 +99,8 @@ export default function FormScreen({ navigation, route }) {
                 if (data.success) {
                     setStudentData(data); // This sets the entire object (role, student, ongoingAlarm)
                 } else {
+                    Alert.alert("LRN Not Found", `The student with LRN ${studentID} doesn't exist in the database.`);
+                    navigation.goBack();
                     console.error("Server error:", data.message);
                 }
             } catch (error) {
@@ -224,7 +228,7 @@ export default function FormScreen({ navigation, route }) {
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.label}>Medical History:</Text>
-                        <Text style={styles.value}>{studentData?.student?.medicalHistory || "No Memdical History Recorded"}</Text>
+                        <Text style={styles.value}>{studentData?.student?.medicalHistory || "No medical history recorded"}</Text>
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.label}>Allergies:</Text>
